@@ -35,12 +35,12 @@ body{font-family:'Segoe UI',-apple-system,sans-serif;background:var(--bg);color:
   .tb-gold{font-size:13px}
   .tb-label{font-size:10px}
 }
-/* topbar legacy cleanup marker A */
+/* 标记 A */
 #topbar .t-user{font-size:11px;color:var(--text2);white-space:nowrap}
-/* marker B */
-/* removed: .t-gold (legacy) */
-/* removed: .t-loc (legacy) */
-/* removed: .t-loc .dot (legacy) */
+/* 标记 B */
+/* 移除: .t-gold (legacy) */
+/* 移除: .t-loc (legacy) */
+/* 移除: .t-loc .dot (legacy) */
 #topbar .t-travel{color:var(--travel);animation:pulse 1.5s infinite}
 #topbar .t-user{font-size:12px;color:var(--text2);white-space:nowrap}
 #topbar .t-user b{color:var(--gold);font-weight:600}
@@ -341,17 +341,6 @@ h3{font-size:15px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
     </div>
     <span class="t-right"><span class="t-user" title="当前账号">👤 <b></b></span></span>
     <span class="sep"></span>
-    <span class="t-stat"><span class="t-label">Day</span><span class="t-val">1</span></span>
-    <span class="sep"></span>
-    <span class="t-loc"><span class="dot"></span>绿田村</span>
-    <span class="sep"></span>
-    <span class="t-stat"><span class="t-gold">💰 10,000</span></span>
-    <span class="sep"></span>
-    <span class="t-stat"><span class="t-label">🚛 货舱</span><span class="t-val">0/30</span></span>
-    <span class="t-stat"><span class="t-label">🧳 旅客</span><span class="t-val">0/4</span></span>
-    <span class="sep"></span>
-    <span class="t-stat"><span class="t-label">⭐ 本城声望</span><span class="t-val" style="color:var(--gold)">Lv0</span></span>
-    
   </div>
 <nav>
   <button data-tab="map" class="active">🗺 地图</button>
@@ -1996,23 +1985,25 @@ function render(){advanceDay();ensureTaskBoard(GS.location);checkAchievements();
 function renderTopbar(){
   const loc=getCityName(GS.location),used=getUsedCargo(),cap=getVehicleCapacity();
   let trav='';if(GS.traveling)trav=`<span class="t-travel">⏳ ${getCityName(GS.traveling.to)} ${Math.max(0,Math.ceil((GS.traveling.arrivalTime-Date.now())/1000))}s</span>`;
-  document.getElementById('topbar').innerHTML=`
-    <span class="t-stat" title="网络状态"><span class="t-label">⚡</span><span class="t-val">${netDot()}</span></span>
-    <span class="sep"></span>
-    <span class="t-stat"><span class="t-label">Day</span><span class="t-val">${GS.day}</span></span>
-    <span class="sep"></span>
-    <span class="t-loc"><span class="dot"></span>${loc}</span>
-    <span class="sep"></span>
-    <span class="t-stat"><span class="t-gold">💰 ${fmt(GS.gold)}</span></span>
-    <span class="sep"></span>
-    <span class="t-stat"><span class="t-label">🚛 货舱</span><span class="t-val">${used+getTaskCargoUsed()}/${cap}</span></span>
-    <span class="t-stat"><span class="t-label">🧳 旅客</span><span class="t-val">${getPassUsed()+getTaskPassUsed()}/${getPassCapacity()}</span></span>
-    <span class="sep"></span>
-    <span class="t-stat"><span class="t-label">⭐ 本城声望</span><span class="t-val" style="color:var(--gold)">Lv${getRepLevel(GS.location)}</span></span>
-    ${trav}
-    <span class="sep"></span>
-    <span class="t-right"><span class="t-user" title="当前账号">👤 <b>${localStorage.getItem(AUTH_KEY)||''}</b></span><button class="t-logout" onclick="doLogout()" title="退出当前账号">登出</button></span>
-  `;
+  document.getElementById('topbar').innerHTML = `
+  <div class="tb-row">
+    <div class="tb-cell"><span class="tb-label">⚡</span><span class="tb-val">${netDot()}</span></div>
+    <div class="tb-cell tb-loc"><span class="tb-loc-name"><span class="dot"></span>${loc} ${trav}</span></div>
+    <div class="tb-cell"><span class="tb-label">Day</span><span class="tb-val">${GS.day}</span></div>
+  </div>
+  <div class="tb-row">
+    <div class="tb-cell"><span class="tb-label">🚛 货舱</span><span class="tb-val">${used+getTaskCargoUsed()}/${cap}</span></div>
+    <div class="tb-cell"><span class="tb-label">🧳 旅客</span><span class="tb-val">${getPassUsed()+getTaskPassUsed()}/${getPassCapacity()}</span></div>
+    <div class="tb-cell"><span class="tb-label">⭐ 本城声望</span><span class="tb-val" style="color:var(--gold)">Lv${getRepLevel(GS.location)}</span></div>
+    <div class="tb-cell"><span class="tb-gold">💰 ${fmt(GS.gold)}</span></div>
+  </div>
+  <span class="t-right">
+    <span class="t-user" title="当前运行模式">${Runtime.isStandalone?'💾 单机':'🌐 在线'}</span>
+    ${Runtime.isStandalone?'<button class="t-logout" onclick="exportLocalSave()" title="导出当前单机存档">导出</button><button class="t-logout" onclick="importLocalSave()" title="导入并覆盖当前单机存档">导入</button>':''}
+    <span class="t-user" title="当前账号">👤 <b>${localStorage.getItem(AUTH_KEY)||''}</b></span>
+    <button class="t-logout" onclick="doLogout()" title="退出当前账号">登出</button>
+  </span>
+`;
 }
 function renderContent(){
   const c=document.getElementById('content');
